@@ -15,7 +15,7 @@ javascript:(function(){
 		text = prompt('Write the JIRA identifier (e.g. "662" or "MAN-662")');
 	
 	if (text) {
-		var m = text.match(/((\w+)-*)?(\d+)/);
+		var m = text.match(/((\w+)-)?(\d+)/);
 		if (!m)
 			return alert('Pattern not matched (e.g. MAN-662)');
 		
