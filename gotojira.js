@@ -1,7 +1,7 @@
 javascript:(function(){
 	var defaultProj = '';
 	var baseUrls = {
-		//"project": "http://jiraurl/"
+		/*"project": "http://jiraurl/"*/
 	};
 	var text;
 	
