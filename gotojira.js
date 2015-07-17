@@ -1,6 +1,8 @@
 javascript:(function(){
 	var defaultProj = '';
-	var baseUrls = {};
+	var baseUrls = {
+		//"project": "http://jiraurl/"
+	};
 	var text;
 	
 	if (window.getSelection) {
