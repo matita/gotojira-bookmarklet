@@ -1,0 +1,180 @@
+<html>
+  <head>
+    <title>Go to JIRA Bookmarklet</title>
+
+    <link rel="stylesheet" href="http://d2v52k3cl9vedd.cloudfront.net/basscss/7.0.2/basscss.min.css">
+    <style>
+      .bookmarklet {
+        cursor: move;
+      }
+
+      .container {
+        max-width: 52rem;
+      }
+
+      pre {
+        border-left: .3rem solid #eee;
+      }
+    </style>
+
+  </head>
+  <body>
+    <header class="center py4 bg-gray white">
+      <h2 class="white">Drag the bookmarklet on the bookmarks bar</h2>
+      <p><a href="#" class="bookmarklet btn btn-primary">Go to JIRA</a></p>
+      <p>for projects: <span class="bookmarklet-projects">---</span></p>
+    </header>
+    <div class="container px2 sm-px3">
+      <main>
+        <h2>Customize</h2>
+        <p>Write your custom mapping from a JIRA project ID (e.g. PROJ) and the related path where JIRA is accessible. The first mapping specified is considered the default.</p>
+        <form class="mapping-form"></form>
+        
+        <h2>Usage</h2>
+        <ul>
+          <li>Click the bookmarklet to open a prompt where to insert the issue ID to search for (e.g. "662" or "MAN-662")</li>
+          <li>or select the issue ID in the web page and click the bookmarklet to be redirected to the related jira page</li>
+        </ul>
+        
+        <h2>Code</h2>
+        <p>See it in <a href="https://github.com/matita/gotojira-bookmarklet">GitHub</a></p>
+        <pre id="code" class="px2"></pre>
+      </main>
+    </div>
+
+
+    <script id="map-tmpl" type="text/html">
+      <div class="proj-map flex">
+        <input type="text" class="project-name field" placeholder="e.g. PROJ">
+        <input type="text" class="project-url field flex-auto" placeholder="e.g. http://jira.example.com:8080/">
+      </div>
+    </script>
+
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script>
+      var jsCodeUrl = 'gotojira.js';
+      var mappings = getMappingsFromUrl();
+      var formHtml = $('#map-tmpl').html();
+      var jsCode;
+
+
+      setForm();
+      $.get(jsCodeUrl, function(text) {
+        jsCode = text;
+        refreshCode();
+      }, 'text');
+
+
+      $('.mapping-form')
+        .on('submit', function() { return false; })
+        .on('change', '.field', onFieldChange);
+
+
+      function onFieldChange() {
+        var $field = $(this).closest('.proj-map');
+        var proj = $field.find('.project-name').val().trim();
+        var url = $field.find('.project-url').val().trim();
+
+        if (proj && url) {
+          mappings = getMappingsFromForm();
+          refreshCode();
+          $('.project-name:last').focus();
+        }
+      }
+
+
+      function processCode() {
+        var def;
+
+        var code = jsCode;
+        var maps = [];
+        for (var proj in mappings) {
+          if (!def)
+            def = proj;
+          maps.push('"' + proj + '": "' + mappings[proj] + '"');
+        }
+
+        if (maps.length)
+          code = code.replace('/*"project": "http://jiraurl/"*/', maps.join(','));
+
+        if (def)
+          code = code.replace('var defaultProj = \'\'', 'var defaultProj = \'' + def + '\'');
+
+        code = code.replace(/\t/g, '  ');
+        
+        return code;
+      }
+
+
+      function getMappingsFromUrl() {
+        var params = location.search.substr(1)
+          .split('&')
+          .reduce(function(params, e) {
+            e = e.split('=');
+            params[e[0]] = decodeURIComponent(e[1]);
+            return params;
+          }, {});
+
+        var mappings = {};
+        var maps = params.proj;
+        if (maps) {
+          maps.split(',').forEach(function(e) {
+            e = e.split('|');
+            mappings[decodeURIComponent(e[0])] = decodeURIComponent(e[1]);
+          });
+        }
+        console.log('mappings', mappings);
+        return mappings;
+      }
+
+
+      function getMappingsFromForm() {
+        var mappings = {};
+        $('.proj-map').each(function() {
+          var $this = $(this);
+          var proj = $this.find('.project-name').val().trim();
+          var url = $this.find('.project-url').val().trim();
+          if (proj && url)
+            mappings[proj] = url;
+        });
+        console.log('mappings from form', mappings);
+        return mappings;
+      }
+
+
+      function setForm() {
+        var $form = $('.mapping-form').empty();
+        for (var proj in mappings) {
+          var $field = $(formHtml)
+            .find('.project-name').val(proj).end()
+            .find('.project-url').val(mappings[proj]).end();
+          $form.append($field);
+        }
+        $form.append(formHtml);
+      }
+
+      function refreshCode() {
+        var code = processCode();
+        $('#code').text(code);
+        refreshBookmarklet();
+        setForm();
+        refreshUrl();
+      }
+
+      function refreshBookmarklet() {
+        $('.bookmarklet').attr('href', $('#code').text());
+        var projects = Object.getOwnPropertyNames(mappings).join(', ');
+        $('.bookmarklet-projects').html(projects || '---');
+      }
+
+      function refreshUrl() {
+        var maps = [];
+        for (var proj in mappings)
+          maps.push(encodeURIComponent(proj) + '|' + encodeURIComponent(mappings[proj]));
+        if (history.replaceState)
+          history.replaceState({}, 'Go to JIRA', '?proj=' + maps.join(','));
+      }
+    </script>
+  </body>
+</html>
