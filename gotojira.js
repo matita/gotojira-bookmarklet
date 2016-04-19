@@ -28,8 +28,8 @@ javascript:(function(){
 		if (!baseUrl) {
 			if (confirm('No url found for project "' + proj + '". Do you want to set it now?')) {
 				var maps = [];
-        for (var proj in baseUrls)
-          maps.push(encodeURIComponent(proj) + '|' + encodeURIComponent(baseUrls[proj]));
+        for (var p in baseUrls)
+          maps.push(encodeURIComponent(p) + '|' + encodeURIComponent(baseUrls[p]));
 				window.open(nest + '?proj=' + maps.join(',') + ',' + proj + '|');
 			} else {
 				return;
