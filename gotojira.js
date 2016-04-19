@@ -30,7 +30,7 @@ javascript:(function(){
 				var maps = [];
         for (var proj in baseUrls)
           maps.push(encodeURIComponent(proj) + '|' + encodeURIComponent(baseUrls[proj]));
-				window.location = nest + '?proj=' + maps.join(',');
+				window.open(nest + '?proj=' + maps.join(',') + ',' + proj + '|');
 			} else {
 				return;
 			}
