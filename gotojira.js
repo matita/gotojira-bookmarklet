@@ -1,4 +1,5 @@
 javascript:(function(){
+	var nest = 'http://matita.github.io/gotojira-bookmarklet/';
 	var defaultProj = '';
 	var baseUrls = {
 		/*"project": "http://jiraurl/"*/
@@ -24,8 +25,16 @@ javascript:(function(){
 		var jiraId = proj + '-' + id;
 		var baseUrl = baseUrls[proj];
 
-		if (!baseUrl)
-			return alert('No url found for project "' + proj + '"');
+		if (!baseUrl) {
+			if (confirm('No url found for project "' + proj + '". Do you want to set it now?')) {
+				var maps = [];
+        for (var proj in baseUrls)
+          maps.push(encodeURIComponent(proj) + '|' + encodeURIComponent(baseUrls[proj]));
+				window.location = nest + '?proj=' + maps.join(',');
+			} else {
+				return;
+			}
+		}
 
 		var url = baseUrl + (baseUrl[baseUrl.length - 1] == '/' ? '' : '/') + 'browse/' + jiraId;
 		window.open(url);
