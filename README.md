@@ -1,8 +1,7 @@
-gotojira-bookmarklet
-=====
-A bookmarklet for easily going to specific JIRA issue from any webpage
+# Jira Lookup Bookmarklet
 
-Usage
------
-* Click the bookmarklet to open a prompt where to insert the issue ID to search for (e.g. "662" or "MAN-662")
-* select the issue ID in the web page and click the bookmarklet to be redirected to the related jira page
+This is a handy way to get to Jira tickets easily. 
+
+Visit the [Jira Lookup Bookmarklet Page](https://threeiem.github.io/gotojira-bookmarklet/) to configure the project.
+
+Based off of Matita [Go to Jira](https://github.com/matita/gotojira-bookmarklet/) bookmarklet.
