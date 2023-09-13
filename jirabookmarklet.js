@@ -1,5 +1,5 @@
 javascript:(function(){
-  var bookmarkletTemplateUrl = 'https://threeiem.gitthub.io/gotojira-bookmarklet/';
+  var bookmarkletTemplateUrl = 'https://threeiem.github.io/gotojira-bookmarklet/';
   var defaultProj = '';
   var baseUrls = {
     /*"PROJ" : "https://jira.companyname.tld/"*/
